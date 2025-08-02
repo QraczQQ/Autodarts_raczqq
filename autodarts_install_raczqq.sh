@@ -22,6 +22,7 @@ fi
 
 
 #ZMIENNA: adres URL pliku z GitHub
+GITHUB_TOKEN="ghp_xxxxxxxxxxxxxxxxxxxxx"
 GITHUB_URL="https://raw.githubusercontent.com/QraczQQ/Autodarts_raczqq/refs/heads/main/led_ir.py"
 
 # Ścieżka docelowa
@@ -29,10 +30,9 @@ DESTINATION="/home/$USER/$(basename "$GITHUB_URL")"
 
 #Pobierz plik
 echo "Pobieranie z: $GITHUB_URL"
-curl -H "Authorization: GHSAT0AAAAAADIP7ASHYWG2GN6OOG2LVYQU2EOMNXA" \
-     -L https://raw.githubusercontent.com/QraczQQ/Autodarts_raczqq/main/led_ir.py \
-     -o led_ir.py
-#curl -L "$GITHUB_URL" -o "$DESTINATION"
+curl -H "Authorization: token GHSAT0AAAAAADIP7ASHYWG2GN6OOG2LVYQU2EOMNXA" \
+     -L "$GITHUB_URL" \
+     -o $DESTINATION
 
 #Nadaj prawa do uruchomienia
 chmod +x "$DESTINATION"
@@ -101,6 +101,7 @@ echo "Nastąpi restart urządzenia................"
 wait 2
 
 sudo reboot
+
 
 
 
