@@ -1,0 +1,95 @@
+#!/bin/bash
+
+sudo apt update
+sudo apt install curl -y
+
+SERVICE_PATH="/etc/systemd/system/led_ir.service"
+SERVICE_IR_PATH="/etc/systemd/system/set-ir-protocol.service"
+
+CONFIG_FILE="/boot/firmware/config.txt"
+LINE="dtoverlay=gpio-ir,gpio_pin=17"
+
+# Dodaj tylko, jeśli nie istnieje
+if ! grep -q "^$LINE" "$CONFIG_FILE"; then
+  echo "$LINE" | sudo tee -a "$CONFIG_FILE"
+  echo "Dodano: $LINE"
+else
+  echo "Wpis już istnieje: $LINE"
+fi
+
+#ZMIENNA: adres URL pliku z GitHub
+GITHUB_URL="https://raw.githubusercontent.com/użytkownik/repozytorium/gałąź/ścieżka/do/pliku.py"
+
+# Ścieżka docelowa
+DESTINATION="/home/$USER/$(basename "$GITHUB_URL")"
+
+#Pobierz plik
+echo "Pobieranie z: $GITHUB_URL"
+curl -L "$GITHUB_URL" -o "$DESTINATION"
+
+#Nadaj prawa do uruchomienia
+chmod +x "$DESTINATION"
+
+echo "Plik zapisano jako: $DESTINATION"
+
+
+echo "Pobieram Autodarts..."
+
+bash <(curl -sL get.autodarts.io)
+
+echo "Tworzenie pliku systemd: $SERVICE_PATH"
+
+sudo bash -c "cat > $SERVICE_PATH" << 'EOF'
+[Unit]
+Description=Monitor autodarts status and start LED IR
+After=network.target autodarts.service
+Requires=autodarts.service
+
+[Service]
+ExecStart=/usr/bin/python3 /home/raczqq/led_ir.py
+ExecStartPre=/bin/sleep 2
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+User=root
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+echo "Tworzenie pliku systemd: $SERVICE_IR_PATH"
+
+sudo bash -c "cat > $SERVICE_IR_PATH" << 'EOF'
+[Unit]
+Description=Set IR protocol to NEC
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/ir-keytable -p nec
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+echo "Ustawianie uprawnień..."
+sudo chmod 644 $SERVICE_PATH
+sudo chmod 644 $SERVICE_IR_PATH
+
+echo "Przeładowywanie systemd..."
+sudo systemctl daemon-reexec
+
+echo "Włączanie usługi led_ir.service..."
+sudo systemctl enable led_ir.service
+sudo systemctl enable set-ir-protocol.service
+wait 2
+sudo systemctl start set-ir-protocol.service
+sudo systemctl start led_ir.service
+
+
+echo "Gotowe! Możesz teraz delektować się grą ! "
+echo "Nastąpi restart urządzenia................"
+wait 2
+sudo reboot
