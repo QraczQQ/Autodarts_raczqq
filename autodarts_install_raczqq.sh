@@ -18,7 +18,7 @@ else
 fi
 
 #ZMIENNA: adres URL pliku z GitHub
-GITHUB_URL="https://raw.githubusercontent.com/użytkownik/repozytorium/gałąź/ścieżka/do/pliku.py"
+GITHUB_URL="https://github.com/QraczQQ/Autodarts_raczqq/blob/main/led_ir.py"
 
 # Ścieżka docelowa
 DESTINATION="/home/$USER/$(basename "$GITHUB_URL")"
@@ -92,4 +92,5 @@ sudo systemctl start led_ir.service
 echo "Gotowe! Możesz teraz delektować się grą ! "
 echo "Nastąpi restart urządzenia................"
 wait 2
+
 sudo reboot
