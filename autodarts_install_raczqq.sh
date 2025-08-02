@@ -3,6 +3,8 @@
 sudo apt update
 sudo apt install curl -y
 
+GITHUB_TOKEN="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"
+
 SERVICE_PATH="/etc/systemd/system/led_ir.service"
 SERVICE_IR_PATH="/etc/systemd/system/set-ir-protocol.service"
 
@@ -22,7 +24,6 @@ fi
 
 
 #ZMIENNA: adres URL pliku z GitHub
-GITHUB_TOKEN="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"
 GITHUB_URL="https://raw.githubusercontent.com/QraczQQ/Autodarts_raczqq/refs/heads/main/led_ir.py"
 
 # Ścieżka docelowa
@@ -101,6 +102,7 @@ echo "Nastąpi restart urządzenia................"
 wait 2
 
 sudo reboot
+
 
 
 
