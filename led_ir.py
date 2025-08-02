@@ -159,6 +159,35 @@ def only_cw():
         else:
             set_led(i, 0, 0, 0)  # RGB wygaszone
     strip.show()
+    
+def only_cw_scaled(brightness):
+    for i in range(LED_COUNT):
+        if i % 2 == 1:  # CW/WW (kanał G)
+            set_led(i, 0, scale(brightness), 0)
+        else:
+            set_led(i, 0, 0, 0)
+    strip.show()
+    
+def fade_cw_cycles():
+    steps_up = 50     # liczba kroków rozjaśniania
+    steps_down = 30   # liczba kroków ściemniania
+    delay_up = 0.02   # opóźnienie między krokami (szybsze)
+    delay_down = 0.04 # opóźnienie między krokami (wolniejsze)
+
+    for _ in range(1):  # dwa cykle
+        # Rozjaśnianie
+        for b in range(0, 256, 256 // steps_up):
+            only_cw_scaled(b)
+            time.sleep(delay_up)
+
+        # Ściemnianie
+        for b in range(255, -1, -256 // steps_down):
+            only_cw_scaled(b)
+            time.sleep(delay_down)
+        # Końcowe rozjaśnianie
+        for b in range(0, 129, 128 // steps_up):  # tylko do 50% (128)
+            only_cw_scaled(b)
+            time.sleep(delay_up)            
 
 # --- Etap 4: WW na nieparzystych indeksach ---
 def only_ww():
@@ -208,22 +237,45 @@ def rgb_ww_only_on():
         set_led(i, scale(255), 0, 0)
     strip.show()
     
+# --- Akcja rozjaśniania do 50% (płynne) ---
+def smooth_brightness_to_50():
+    steps_up = 50     # liczba kroków rozjaśniania
+    delay_up = 0.02   # opóźnienie między krokami (szybsze)
+
+    print("Rozjaśnianie do 50%...")
+    for b in range(0, 129, 128 // steps_up):  # tylko do 50% (128)
+        only_cw_scaled(b)
+        time.sleep(delay_up)
+
+    
     # --- Obsługa pilota IR ---
 def ir_listener(device_path='/dev/input/event0'):
     global led_enabled, brightness_level, current_effect
+    last_received_time = 0  # Czas ostatniego odebranego sygnału
 
     dev = InputDevice(device_path)
     print(f"Nasłuchiwanie IR na {device_path}...")
+    
+    debounce_time = 1  # Czas w sekundach, przez który ignorujemy kolejne sygnały
 
     for event in dev.read_loop():
         if event.type == ecodes.EV_MSC and event.code == ecodes.MSC_SCAN:
             sc = event.value
+            current_time = time.time()
+
+            # Jeśli minęło mniej niż debounce_time od ostatniego sygnału, ignorujemy sygnał
+            if current_time - last_received_time < debounce_time:
+                continue
+
             print(f"[IR] Otrzymano kod: {hex(sc)}")
+
+            # Zaktualizuj czas ostatniego odebranego sygnału
+            last_received_time = current_time
 
             with lock:
                 if sc == IR_ON:
                     led_enabled = True
-                    run_effect("cw")
+                    smooth_brightness_to_50()
                     print("LED: ON")
                 elif sc == IR_OFF:
                     led_enabled = False
@@ -297,40 +349,18 @@ def run_effect(name):
     elif name == "alternate_white":
         alternate_white()
     elif name == "all_max":
-        all_max()
-
+        all_max()     
 
 # --- Program główny ---
 try:
-    """time.sleep(2)"""
-    """clear()"""
     snake_rgb()
     snake_rgb()
-    snake_rgb()
-    clear()
-    ir_listener('/dev/input/event0')  # <-- dostosuj ścieżkę jeśli trzeba
-    
-    """time.sleep(1)
-    fade_out_rgb()
-    only_cw()
-    time.sleep(2)
-    only_ww()
-    time.sleep(2)
-    alternate_white()
-    time.sleep(2)
-    all_max()
-    time.sleep(2)
-    rgb_only_on()
-    time.sleep(2)
-    rgb_ww_only_on()
-    time.sleep(2)
-    rgb_cw_only_on()
-    time.sleep(2)
-    only_cw()"""
-    
+    fade_cw_cycles()
+    only_cw_scaled(128)
+    ir_listener('/dev/input/event0')  # <-- dostosuj ścieżkę jeśli trzeba   
 
 except KeyboardInterrupt:
       clear()
 
-finally:
-    GPIO.cleanup()
+"""finally:
+    GPIO.cleanup()"""
