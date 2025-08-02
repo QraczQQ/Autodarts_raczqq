@@ -18,7 +18,7 @@ else
 fi
 
 #ZMIENNA: adres URL pliku z GitHub
-GITHUB_URL="https://github.com/QraczQQ/Autodarts_raczqq/blob/main/led_ir.py"
+GITHUB_URL="https://raw.githubusercontent.com/QraczQQ/Autodarts_raczqq/refs/heads/main/led_ir.py?token=GHSAT0AAAAAADIP7ASHYWG2GN6OOG2LVYQU2EOMNXA"
 
 # Ścieżka docelowa
 DESTINATION="/home/$USER/$(basename "$GITHUB_URL")"
@@ -94,3 +94,4 @@ echo "Nastąpi restart urządzenia................"
 wait 2
 
 sudo reboot
+
