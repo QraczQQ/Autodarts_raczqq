@@ -6,7 +6,7 @@ SERVICE_PATH="/etc/systemd/system/led_ir.service"
 SERVICE_IR_PATH="/etc/systemd/system/set-ir-protocol.service"
 CONFIG_FILE="/boot/firmware/config.txt"
 LINE="dtoverlay=gpio-ir,gpio_pin=17"
-USER=$(whoami)
+USER=$(logname)
 # Dodaj tylko, jeśli nie istnieje
 if [ -f "$CONFIG_FILE" ]; then
 	if ! grep -q "^$LINE" "$CONFIG_FILE"; then
@@ -32,7 +32,7 @@ echo "Plik zapisano jako: $DESTINATION"
 echo "Pobieram Autodarts..."
 bash <(curl -sL get.autodarts.io)
 echo "Tworzenie pliku systemd: $SERVICE_PATH"
-sudo bash -c "cat > $SERVICE_PATH" << 'EOF'
+sudo bash -c "cat > $SERVICE_PATH" << EOF
 [Unit]
 Description=Monitor autodarts status and start LED IR
 After=network.target autodarts.service
