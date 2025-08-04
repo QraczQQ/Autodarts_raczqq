@@ -1,35 +1,43 @@
 #!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color (resetowanie koloru)
+
 sudo apt update
 sudo apt install curl -y
-#GITHUB_TOKEN="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"
+
 SERVICE_PATH="/etc/systemd/system/led_ir.service"
 SERVICE_IR_PATH="/etc/systemd/system/set-ir-protocol.service"
 CONFIG_FILE="/boot/firmware/config.txt"
 LINE="dtoverlay=gpio-ir,gpio_pin=17"
 USER=$(logname)
+
 # Dodaj tylko, jeśli nie istnieje
 if [ -f "$CONFIG_FILE" ]; then
 	if ! grep -q "^$LINE" "$CONFIG_FILE"; then
 		echo "$LINE" | sudo tee -a "$CONFIG_FILE"
-		echo "Dodano: $LINE"
+		echo "${GREEN}Dodano: $LINE ${NC}"
 	else
-		echo "Wpis już istnieje: $LINE"
+		echo "${YELLOW}Wpis już istnieje: $LINE ${NC}"
  fi
 else
-  echo "Plik $CONFIG_FILE nie istnieje — pomijam wpis..."
+  echo "${RED}Plik $CONFIG_FILE nie istnieje — pomijam wpis...${NC}"
 fi
 #ZMIENNA: adres URL pliku z GitHub
 GITHUB_URL="https://raw.githubusercontent.com/QraczQQ/Autodarts_raczqq/refs/heads/main/led_ir.py"
 # Ścieżka docelowa
 DESTINATION="/home/$USER/$(basename "$GITHUB_URL")"
 #Pobierz plik
-echo "Pobieranie z: $GITHUB_URL"
+echo "${YELLOW}Pobieranie z:${NC} $GITHUB_URL"
 #curl -H "Authorization: token $GITHUB_TOKEN"
 curl -L "$GITHUB_URL" -o $DESTINATION
 #Nadaj prawa do uruchomienia
 chmod +x "$DESTINATION"
-echo "Plik zapisano jako: $DESTINATION"
-echo "Pobieram Autodarts..."
+echo "${GREEN}Plik zapisano jako:${NC} $DESTINATION"
+echo "${BLUE}Pobieram Autodarts...${NC}"
 bash <(curl -sL get.autodarts.io)
 echo "Tworzenie pliku systemd: $SERVICE_PATH"
 sudo bash -c "cat > $SERVICE_PATH" << EOF
@@ -74,11 +82,11 @@ sleep 2
 sudo systemctl start set-ir-protocol.service
 sudo systemctl start led_ir.service
 
-echo "Gotowe! Możesz teraz delektować się grą ! "
-echo "Nastąpi restart urządzenia................"
+echo "${GREEN}[OK]Gotowe! Możesz teraz delektować się grą ! ${NC}"
+echo ${YELLOW}Nastąpi restart urządzenia................${NC}"
 
 for i in $(seq 5 -1 1); do
-  echo -ne "Restart za $i sek...\r"
+  echo -ne "${YELLOW}Restart za $i sek...\r${NC}"
   sleep 1
 done
 
