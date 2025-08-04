@@ -74,7 +74,7 @@ sleep 2
 sudo systemctl start set-ir-protocol.service
 sudo systemctl start led_ir.service
 
- "Gotowe! Możesz teraz delektować się grą ! "
+echo "Gotowe! Możesz teraz delektować się grą ! "
 echo "Nastąpi restart urządzenia................"
 
 for i in $(seq 5 -1 1); do
