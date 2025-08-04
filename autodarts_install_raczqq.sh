@@ -30,7 +30,7 @@ curl -L "$GITHUB_URL" -o $DESTINATION
 chmod +x "$DESTINATION"
 echo "Plik zapisano jako: $DESTINATION"
 echo "Pobieram Autodarts..."
-# <(curl -sL get.autodarts.io)
+bash <(curl -sL get.autodarts.io)
 echo "Tworzenie pliku systemd: $SERVICE_PATH"
 sudo bash -c "cat > $SERVICE_PATH" << 'EOF'
 [Unit]
