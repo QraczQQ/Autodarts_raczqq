@@ -19,25 +19,25 @@ USER=$(logname)
 if [ -f "$CONFIG_FILE" ]; then
 	if ! grep -q "^$LINE" "$CONFIG_FILE"; then
 		echo "$LINE" | sudo tee -a "$CONFIG_FILE"
-		echo "${GREEN}Dodano: $LINE ${NC}"
+		echo -e "${GREEN}Dodano: $LINE ${NC}"
 	else
-		echo "${YELLOW}Wpis już istnieje: $LINE ${NC}"
+		echo -e "${YELLOW}Wpis już istnieje: $LINE ${NC}"
  fi
 else
-  echo "${RED}Plik $CONFIG_FILE nie istnieje — pomijam wpis...${NC}"
+  echo -e "${RED}Plik $CONFIG_FILE nie istnieje — pomijam wpis...${NC}"
 fi
 #ZMIENNA: adres URL pliku z GitHub
 GITHUB_URL="https://raw.githubusercontent.com/QraczQQ/Autodarts_raczqq/refs/heads/main/led_ir.py"
 # Ścieżka docelowa
 DESTINATION="/home/$USER/$(basename "$GITHUB_URL")"
 #Pobierz plik
-echo "${YELLOW}Pobieranie z:${NC} $GITHUB_URL"
+echo -e "${YELLOW}Pobieranie z:${NC} $GITHUB_URL"
 #curl -H "Authorization: token $GITHUB_TOKEN"
 curl -L "$GITHUB_URL" -o $DESTINATION
 #Nadaj prawa do uruchomienia
 chmod +x "$DESTINATION"
-echo "${GREEN}Plik zapisano jako:${NC} $DESTINATION"
-echo "${BLUE}Pobieram Autodarts...${NC}"
+echo -e "${GREEN}Plik zapisano jako:${NC} $DESTINATION"
+echo -e "${BLUE}Pobieram Autodarts...${NC}"
 bash <(curl -sL get.autodarts.io)
 echo "Tworzenie pliku systemd: $SERVICE_PATH"
 sudo bash -c "cat > $SERVICE_PATH" << EOF
@@ -82,8 +82,8 @@ sleep 2
 sudo systemctl start set-ir-protocol.service
 sudo systemctl start led_ir.service
 
-echo "${GREEN}[OK]Gotowe! Możesz teraz delektować się grą ! ${NC}"
-echo ${YELLOW}Nastąpi restart urządzenia................${NC}"
+echo -e "${GREEN}[OK]Gotowe! Możesz teraz delektować się grą ! ${NC}"
+echo -e "${YELLOW}Nastąpi restart urządzenia................${NC}"
 
 for i in $(seq 5 -1 1); do
   echo -ne "${YELLOW}Restart za $i sek...\r${NC}"
