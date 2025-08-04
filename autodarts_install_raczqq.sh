@@ -3,13 +3,14 @@
 sudo apt update
 sudo apt install curl -y
 
-GITHUB_TOKEN="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"
+#GITHUB_TOKEN="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"
 
 SERVICE_PATH="/etc/systemd/system/led_ir.service"
 SERVICE_IR_PATH="/etc/systemd/system/set-ir-protocol.service"
 
 CONFIG_FILE="/boot/firmware/config.txt"
 LINE="dtoverlay=gpio-ir,gpio_pin=17"
+USER=$(whoami)
 
 # Dodaj tylko, jeśli nie istnieje
 if ! grep -q "^$LINE" "$CONFIG_FILE"; then
@@ -31,15 +32,13 @@ DESTINATION="/home/$USER/$(basename "$GITHUB_URL")"
 
 #Pobierz plik
 echo "Pobieranie z: $GITHUB_URL"
-curl -H "Authorization: token $GITHUB_TOKEN" \
-     -L "$GITHUB_URL" \
-     -o $DESTINATION
+#curl -H "Authorization: token $GITHUB_TOKEN"
+curl -L "$GITHUB_URL" -o $DESTINATION
 
 #Nadaj prawa do uruchomienia
 chmod +x "$DESTINATION"
 
 echo "Plik zapisano jako: $DESTINATION"
-
 
 echo "Pobieram Autodarts..."
 
@@ -54,7 +53,7 @@ After=network.target autodarts.service
 Requires=autodarts.service
 
 [Service]
-ExecStart=/usr/bin/python3 /home/raczqq/led_ir.py
+ExecStart=/usr/bin/python3 /home/$USER/led_ir.py
 ExecStartPre=/bin/sleep 2
 Restart=on-failure
 RestartSec=5
@@ -102,6 +101,7 @@ echo "Nastąpi restart urządzenia................"
 wait 2
 
 sudo reboot
+
 
 
 
