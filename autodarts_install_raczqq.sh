@@ -8,12 +8,21 @@ NC='\033[0m' # No Color (resetowanie koloru)
 
 sudo apt update
 sudo apt install curl -y
+sudo apt install python3-rpi.gpio -y
+sudo apt install lirc -y
+sudo apt install ir-keytable -y
+sudo pip3 install rpi_ws281x evdev -y
+sudo git clone https://github.com/lbormann/darts-caller.git -y
+sudo pip3 install -r requirements.txt--break-system-packages -y
+
 
 SERVICE_PATH="/etc/systemd/system/led_ir.service"
 SERVICE_IR_PATH="/etc/systemd/system/set-ir-protocol.service"
 CONFIG_FILE="/boot/firmware/config.txt"
 LINE="dtoverlay=gpio-ir,gpio_pin=17"
 USER=$(logname)
+
+sudo usermod -aG gpio $USER
 
 # Dodaj tylko, jeśli nie istnieje
 if [ -f "$CONFIG_FILE" ]; then
