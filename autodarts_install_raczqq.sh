@@ -13,7 +13,9 @@ sudo apt install lirc -y
 sudo apt install ir-keytable -y
 sudo pip3 install rpi_ws281x evdev -y
 sudo git clone https://github.com/lbormann/darts-caller.git -y
+cd darts-caller
 sudo pip3 install -r requirements.txt--break-system-packages -y
+cd..
 
 
 SERVICE_PATH="/etc/systemd/system/led_ir.service"
