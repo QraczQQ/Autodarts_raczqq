@@ -20,6 +20,7 @@ SERVICE_PATH="/etc/systemd/system/led_ir.service"
 SERVICE_IR_PATH="/etc/systemd/system/set-ir-protocol.service"
 CONFIG_FILE="/boot/firmware/config.txt"
 LINE="dtoverlay=gpio-ir,gpio_pin=17"
+LINE2="dtoverlay=gpio-fan,gpiopin=14,temp=60000"
 USER=$(logname)
 
 sudo usermod -aG gpio $USER
@@ -31,6 +32,12 @@ if [ -f "$CONFIG_FILE" ]; then
 		echo -e "${GREEN}Dodano: $LINE ${NC}"
 	else
 		echo -e "${YELLOW}Wpis już istnieje: $LINE ${NC}"
+  	
+   if ! grep -q "^$LINE2" "$CONFIG_FILE"; then
+		echo "$LINE2" | sudo tee -a "$CONFIG_FILE"
+		echo -e "${GREEN}Dodano: $LINE2 ${NC}"
+	else
+		echo -e "${YELLOW}Wpis już istnieje: $LINE2 ${NC}"
  fi
 else
   echo -e "${RED}Plik $CONFIG_FILE nie istnieje — pomijam wpis...${NC}"
